@@ -1,7 +1,7 @@
-const Header = (props) => {
+const Header = ({course}) => {
   return (
     <>
-      <h1>{props.course}</h1>
+      <h1>{course}</h1>
     </>
   )
 }
@@ -16,9 +16,9 @@ const Content = (props) => {
   )
 }
 
-const Total = (props) => {
+const Total = ({parts}) => {
   let sum = 0
-  props.parts.forEach(part => {
+  parts.forEach(part => {
     sum += part.exercises
   })
   return (
@@ -28,10 +28,10 @@ const Total = (props) => {
   )
 }
 
-const Part = (props) => {
+const Part = ({name, exercises}) => {
   return (
     <>
-      <p>{props.name} {props.exercises}</p>
+      <p>{name} {exercises}</p>
     </>
   )
 }
