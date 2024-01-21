@@ -8,8 +8,8 @@ const Button = ({handleClicks, text}) => (
   <button onClick={handleClicks}>{text}</button>
 )
 
-const StatisticLine = ({stat, text}) => (
-  <p>{text} {stat}</p>
+const StatisticLine = ({stat, text, suf=""}) => (
+  <p>{text} {stat} {suf}</p>
 )
 
 const Statistics = (props) => {
@@ -25,7 +25,7 @@ const Statistics = (props) => {
     <StatisticLine stat={props.bad} text="bad" />
     <StatisticLine stat={props.total} text="all" />
     <StatisticLine stat={props.avg} text="average" />
-    <StatisticLine stat={props.pos} text="positive" />
+    <StatisticLine stat={props.pos} text="positive" suf="%" />
   </div>
   )
 }
