@@ -4,6 +4,10 @@ const Button = ({handleClick, text}) => (
   <button onClick={handleClick}>{text}</button>
 )
 
+const Header = ({text}) => (
+  <h1>{text}</h1>
+)
+
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -25,12 +29,28 @@ const App = () => {
     setVote(copy)
   }
 
+  const getMax = () => {
+    let max = vote[0]
+    let maxIndex = 0
+    for (let i = 0; i < vote.length; i++) {
+      if (max < vote[i]) {
+        max = vote[i]
+        maxIndex = i
+      }
+    }
+    return maxIndex
+  }
+
   return (
     <div>
+      <Header text="Anecdote of the day" />
       <div>{anecdotes[selected]}</div>
       <div>has {vote[selected]} votes</div>
       <Button handleClick={onCountVote} text="vote"/>
       <Button handleClick={() => setSelected(Math.floor(Math.random() * anecdotes.length))} text="next anecdote" />
+      <Header text="Anecdote with most votes" />
+      <div>{anecdotes[getMax()]}</div>
+      <div>has {vote[getMax()]} votes</div>
     </div>
   )
 }
