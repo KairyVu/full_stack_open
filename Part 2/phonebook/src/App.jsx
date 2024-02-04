@@ -24,6 +24,7 @@ const Persons = ({persons, onDisplay}) => (
   </>
 )
 
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-123456', id: 1 },
