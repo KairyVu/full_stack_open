@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -43,7 +44,7 @@ const App = () => {
     axios
       .get("http://localhost:3001/persons")
       .then((response) => setPersons(response.data));
-  });
+  }, []);
 
   const addName = (event) => {
     event.preventDefault();
@@ -55,7 +56,12 @@ const App = () => {
         number: newNumber,
         id: persons.length + 1,
       };
-      setPersons(persons.concat(newNameAdd));
+      axios
+        .post("http://localhost:3001/persons", newNameAdd)
+        .then((response) => {
+          setPersons(persons.concat(newNameAdd));
+          console.log(response.data);
+        });
     } else {
       alert(`${newName} is already added to phonebook`);
     }
