@@ -1,37 +1,9 @@
-import axios from "axios";
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-
-const Filter = ({ val, onChange }) => (
-  <div>
-    filter shown with <input value={val} onChange={onChange} />
-  </div>
-);
-
-const PersonForm = (props) => (
-  <form onSubmit={props.submit}>
-    <div>
-      name: <input value={props.name} onChange={props.nameChange} />
-    </div>
-    <div>
-      number: <input value={props.number} onChange={props.numberChange} />
-    </div>
-    <div>
-      <button type="submit">add</button>
-    </div>
-  </form>
-);
-
-const Persons = ({ persons, onDisplay }) => (
-  <>
-    {persons
-      .filter((person) => onDisplay(person))
-      .map((person) => (
-        <div key={person.id}>
-          {person.name} {person.number}
-        </div>
-      ))}
-  </>
-);
+import Filter from "./components/Filter";
+import PersonForm from "./components/PersonForm";
+import Persons from "./components/Persons";
+import personService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -40,24 +12,43 @@ const App = () => {
   const [newSearch, setNewSearch] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then((response) => setPersons(response.data));
-  });
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
+    });
+  }, []);
 
   const addName = (event) => {
     event.preventDefault();
     let state = false;
     persons.forEach((person) => (state = state || person.name === newName));
     if (!state) {
+      const newId = persons.length + 1;
       const newNameAdd = {
         name: newName,
         number: newNumber,
-        id: persons.length + 1,
+        id: newId.toString(),
       };
-      setPersons(persons.concat(newNameAdd));
+      personService.create(newNameAdd).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+      });
     } else {
-      alert(`${newName} is already added to phonebook`);
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        const getPerson = persons.find((person) => person.name === newName);
+        const updatedPerson = { ...getPerson, number: newNumber };
+        personService
+          .update(getPerson.id, updatedPerson)
+          .then((updatedPrs) =>
+            setPersons(
+              persons.map((per) =>
+                per.name !== getPerson.name ? per : updatedPrs
+              )
+            )
+          );
+      }
     }
     setNewName("");
     setNewNumber("");
@@ -79,6 +70,15 @@ const App = () => {
     return person.name.toLowerCase().includes(newSearch.toLowerCase());
   };
 
+  const handleDelete = (person) => {
+    if (window.confirm(`Delete ${person.name}`)) {
+      personService.del(person.id).then(() => {
+        setPersons(persons.filter((prs) => prs.id !== person.id));
+        console.log(`Deleted successfully`);
+      });
+    }
+  };
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -95,7 +95,11 @@ const App = () => {
 
       <h3>Numbers</h3>
 
-      <Persons persons={persons} onDisplay={onHandleSearch} />
+      <Persons
+        persons={persons}
+        onDisplay={onHandleSearch}
+        handleDelete={handleDelete}
+      />
     </div>
   );
 };
