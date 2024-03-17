@@ -1,38 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
+import Filter from "./components/Filter";
+import PersonForm from "./components/PersonForm";
+import Persons from "./components/Persons";
 import personService from "./services/persons";
-
-const Filter = ({ val, onChange }) => (
-  <div>
-    filter shown with <input value={val} onChange={onChange} />
-  </div>
-);
-
-const PersonForm = (props) => (
-  <form onSubmit={props.submit}>
-    <div>
-      name: <input value={props.name} onChange={props.nameChange} />
-    </div>
-    <div>
-      number: <input value={props.number} onChange={props.numberChange} />
-    </div>
-    <div>
-      <button type="submit">add</button>
-    </div>
-  </form>
-);
-
-const Persons = ({ persons, onDisplay }) => (
-  <>
-    {persons
-      .filter((person) => onDisplay(person))
-      .map((person) => (
-        <div key={person.id}>
-          {person.name} {person.number}
-        </div>
-      ))}
-  </>
-);
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -57,7 +28,7 @@ const App = () => {
         id: persons.length + 1,
       };
       personService.create(newNameAdd).then((returnedPerson) => {
-        setPersons(returnedPerson);
+        setPersons(persons.concat(returnedPerson));
       });
     } else {
       alert(`${newName} is already added to phonebook`);
