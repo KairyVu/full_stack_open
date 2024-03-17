@@ -22,10 +22,11 @@ const App = () => {
     let state = false;
     persons.forEach((person) => (state = state || person.name === newName));
     if (!state) {
+      const newId = persons.length + 1;
       const newNameAdd = {
         name: newName,
         number: newNumber,
-        id: persons.length + 1,
+        id: newId.toString(),
       };
       personService.create(newNameAdd).then((returnedPerson) => {
         setPersons(persons.concat(returnedPerson));
@@ -53,6 +54,15 @@ const App = () => {
     return person.name.toLowerCase().includes(newSearch.toLowerCase());
   };
 
+  const handleDelete = (person) => {
+    if (window.confirm(`Delete ${person.name}`)) {
+      personService.del(person.id).then(() => {
+        setPersons(persons.filter((prs) => prs.id !== person.id));
+        console.log(`Deleted successfully`);
+      });
+    }
+  };
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -69,7 +79,11 @@ const App = () => {
 
       <h3>Numbers</h3>
 
-      <Persons persons={persons} onDisplay={onHandleSearch} />
+      <Persons
+        persons={persons}
+        onDisplay={onHandleSearch}
+        handleDelete={handleDelete}
+      />
     </div>
   );
 };
