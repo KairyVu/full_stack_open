@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-import axios from "axios";
 import { useEffect, useState } from "react";
+import personService from "./services/persons";
 
 const Filter = ({ val, onChange }) => (
   <div>
@@ -41,9 +41,9 @@ const App = () => {
   const [newSearch, setNewSearch] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then((response) => setPersons(response.data));
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
+    });
   }, []);
 
   const addName = (event) => {
@@ -56,12 +56,9 @@ const App = () => {
         number: newNumber,
         id: persons.length + 1,
       };
-      axios
-        .post("http://localhost:3001/persons", newNameAdd)
-        .then((response) => {
-          setPersons(persons.concat(newNameAdd));
-          console.log(response.data);
-        });
+      personService.create(newNameAdd).then((returnedPerson) => {
+        setPersons(returnedPerson);
+      });
     } else {
       alert(`${newName} is already added to phonebook`);
     }
